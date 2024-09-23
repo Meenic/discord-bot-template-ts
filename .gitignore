@@ -1,0 +1,38 @@
+# Node modules
+/node_modules/
+
+# Build output
+/dist/
+/build/
+
+# Environment variables
+.env
+.env.development
+.env.production
+
+# Logs
+/logs/
+/*.log
+
+# Dependency directories
+pnpm-lock.yaml
+yarn-error.log
+package-lock.json
+npm-debug.log*
+
+# IDE and Editor Specific
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.iml
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Coverage directory
+/coverage/
+
+# TypeScript compiled files
+*.tsbuildinfo
