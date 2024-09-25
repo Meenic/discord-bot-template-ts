@@ -1,4 +1,4 @@
-# ⚡ Discord TypeScript Bot
+# ⚡ Discord Bot Template TypeScript
 
 This repository provides a structured template for building a Discord bot using TypeScript and the `discord.js` library. It includes a modular service-loading system, command handling with support for slash commands, and more!
 
@@ -8,11 +8,9 @@ This repository provides a structured template for building a Discord bot using 
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-- [Configuration](#configuration)
 - [Command Structure](#command-structure)
 - [Usage](#usage)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
@@ -47,10 +45,6 @@ Make sure you have the following installed:
    ```
 
 3. Create a `.env` file in the root directory and fill in your bot's configuration.
-
-## Configuration
-
-In the .env file, configure the required settings.
 
 ## Command Structure
 
