@@ -33,16 +33,16 @@ Make sure you have the following installed:
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/your-username/discord-typescript-bot-template.git
-   cd discord-typescript-bot-template
-   ```
+```bash
+git clone https://github.com/your-username/discord-typescript-bot-template.git
+cd discord-typescript-bot-template
+```
 
 2. Install the dependencies:
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
 3. Create a `.env` file in the root directory and fill in your bot's configuration.
 
@@ -50,36 +50,38 @@ Make sure you have the following installed:
 
 Commands are organized in the `commands` directory. Each command should extend the `BaseCommand` class and implement the `execute` method. Here's an example of a simple command:
 
-    ```typescript
-    export class PingCommand extends BaseCommand {
-        constructor(client: BMClient) {
-            super(client, {
-            name: 'ping',
-            description: 'Replies with Pong! and shows latency.',
-            category: 'Utility',
-            });
-        }
+```typescript
+export class PingCommand extends BaseCommand {
+  constructor(client: CustomClient) {
+    super(client, {
+      name: CommandName.Ping,
+      description: 'Replies with Pong! and shows latency.',
+      category: CommandCategory.Utility,
+    });
+  }
 
-        async execute(interaction: CommandInteraction): Promise<void> {
-            await interaction.deferReply({ ephemeral: false });
-            const sentMessage = await interaction.fetchReply();
-            const latency = sentMessage.createdTimestamp - interaction.createdTimestamp;
-            const apiLatency = Math.round(interaction.client.ws.ping);
+  async execute(interaction: CommandInteraction): Promise<void> {
+    await interaction.deferReply({ ephemeral: false });
 
-            await interaction.editReply(
-            `🏓 Pong! Latency: ${latency}ms | API Latency: ${apiLatency}ms`,
-            );
-        }
-    }
-    ```
+    const sentMessage = await interaction.fetchReply();
+
+    const latency = sentMessage.createdTimestamp - interaction.createdTimestamp;
+    const apiLatency = Math.round(interaction.client.ws.ping);
+
+    await interaction.editReply(
+      `🏓 Pong! Latency: ${latency}ms | API Latency: ${apiLatency}ms`,
+    );
+  }
+}
+```
 
 ## Usage
 
 To run your bot, execute the following command:
 
-    ```bash
-    npm run start
-    ```
+```bash
+npm run start
+```
 
 Make sure you have set up your environment variables before starting the bot.
 
