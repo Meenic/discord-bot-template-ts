@@ -34,7 +34,7 @@ Ensure you have the following installed:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/discord-bot-template-ts.git
+   git clone https://github.com/Meenic/discord-bot-template-ts.git
    cd discord-bot-template-ts
    ```
 
