@@ -1,14 +1,14 @@
 import './config';
-import { CustomClient } from './client';
+import { BaseClient } from './client';
 
 (async () => {
-  const bot = new CustomClient();
+  const client = new BaseClient();
 
   try {
     console.log(`[Main] Starting bot in ${process.env.NODE_ENV} mode...`);
 
-    await bot.startBot();
-    await bot.login(process.env.TOKEN);
+    await client.startBot();
+    await client.login(process.env.TOKEN);
   } catch (error) {
     console.error(`[Main] Error during bot startup:`, error);
     process.exit(1);

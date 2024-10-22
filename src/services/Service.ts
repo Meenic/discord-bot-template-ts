@@ -1,17 +1,13 @@
-import { CustomClient } from '../client';
+import { BaseClient } from '../client';
 
 export abstract class Service {
-  protected client: CustomClient;
+  protected client: BaseClient;
 
-  constructor(client: CustomClient) {
+  constructor(client: BaseClient) {
     this.client = client;
   }
 
-  abstract init(): Promise<void>;
+  public async init?(): Promise<void> {}
 
-  public onClientReady(): void {}
-
-  protected log(message: string) {
-    console.log(`[Service] ${this.constructor.name}: ${message}`);
-  }
+  public registerEvents?(): void {}
 }

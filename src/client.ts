@@ -1,9 +1,12 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
-import { Service } from './services/Service';
 import { CommandService } from './services/CommandService';
 
-export class CustomClient extends Client {
-  public services: Service[];
+interface ServiceMap {
+  command: CommandService;
+}
+
+export class BaseClient extends Client {
+  public services: ServiceMap;
 
   constructor() {
     super({
@@ -14,7 +17,9 @@ export class CustomClient extends Client {
       ],
     });
 
-    this.services = [new CommandService(this)];
+    this.services = {
+      command: new CommandService(this),
+    };
 
     this.on(Events.ClientReady, this.onClientReady);
   }
@@ -22,9 +27,9 @@ export class CustomClient extends Client {
   private onClientReady() {
     console.log(`[Client] Logged in as ${this.user?.tag}`);
 
-    this.services.forEach((service) => {
-      if (service.onClientReady) {
-        service.onClientReady();
+    Object.values(this.services).forEach((service) => {
+      if (service.registerEvents) {
+        service.registerEvents();
       }
     });
 
@@ -34,8 +39,10 @@ export class CustomClient extends Client {
   }
 
   public async initServices() {
-    for (const service of this.services) {
-      await service.init();
+    for (const service of Object.values(this.services)) {
+      if (service.init) {
+        await service.init();
+      }
       console.log(`[Client] Service ${service.constructor.name} initialized.`);
     }
     console.log(`[Client] All services initialized.`);

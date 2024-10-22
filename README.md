@@ -52,7 +52,7 @@ Commands are organized in the `commands` directory. Each command should extend t
 
 ```typescript
 export class PingCommand extends BaseCommand {
-  constructor(client: CustomClient) {
+  constructor(client: BaseClient) {
     super(client, {
       name: CommandName.Ping,
       description: 'Replies with Pong! and shows latency.',
