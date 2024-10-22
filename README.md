@@ -1,6 +1,6 @@
-# ⚡ Discord Bot Template TypeScript
+# ⚡ Discord Bot Template (TypeScript)
 
-This repository provides a structured template for building a Discord bot using TypeScript and the `discord.js` library. It includes a modular service-loading system, command handling with support for slash commands, and more!
+This repository offers a robust template for developing a Discord bot using TypeScript and the `discord.js` library. It features a modular service-loading system, comprehensive command handling with support for slash commands, and more!
 
 ## Table of Contents
 
@@ -14,18 +14,18 @@ This repository provides a structured template for building a Discord bot using 
 
 ## Features
 
-- Modular architecture with services and commands.
-- Slash command registration and execution.
-- Client event handling for a smooth bot experience.
-- Configurable environment settings.
+- Modular architecture with organized services and commands.
+- Easy registration and execution of slash commands.
+- Efficient client event handling for a seamless user experience.
+- Configurable environment settings for flexibility.
 
 ## Getting Started
 
 ### Prerequisites
 
-Make sure you have the following installed:
+Ensure you have the following installed:
 
-- [Node.js](https://nodejs.org/) (v16 or higher recommended)
+- [Node.js](https://nodejs.org/) (recommended: v16 or higher)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Discord.js](https://discord.js.org/)
 
@@ -33,58 +33,50 @@ Make sure you have the following installed:
 
 1. Clone the repository:
 
-```bash
-git clone https://github.com/your-username/discord-typescript-bot-template.git
-cd discord-typescript-bot-template
-```
+   ```bash
+   git clone https://github.com/your-username/discord-bot-template-ts.git
+   cd discord-bot-template-ts
+   ```
 
 2. Install the dependencies:
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
-3. Create a `.env` file in the root directory and fill in your bot's configuration.
+3. Create a `.env` file in the root directory and populate it with your bot's configuration.
 
 ## Command Structure
 
-Commands are organized in the `commands` directory. Each command should extend the `BaseCommand` class and implement the `execute` method. Here's an example of a simple command:
+Commands are organized within the `commands` directory, where each command extends `BaseChatInputCommand`, `BaseChatInputSubcommand`, or `BaseChatInputSubcommandGroup`, implementing the `onChatInputInteraction` method as necessary. Explore the commands folder for a clear layout. Here’s an example of a simple command:
 
 ```typescript
-export class PingCommand extends BaseCommand {
+export default class PingCommand extends BaseChatInputCommand {
   constructor(client: BaseClient) {
     super(client, {
-      name: CommandName.Ping,
-      description: 'Replies with Pong! and shows latency.',
+      name: 'ping',
+      description: 'Replies with "Pong!" and shows latency.',
       category: CommandCategory.Utility,
+      // Additional options can go here
     });
   }
 
-  async execute(interaction: CommandInteraction): Promise<void> {
-    await interaction.deferReply({ ephemeral: false });
-
-    const sentMessage = await interaction.fetchReply();
-
-    const latency = sentMessage.createdTimestamp - interaction.createdTimestamp;
-    const apiLatency = Math.round(interaction.client.ws.ping);
-
-    await interaction.editReply(
-      `🏓 Pong! Latency: ${latency}ms | API Latency: ${apiLatency}ms`,
-    );
+  async onChatInputInteraction(interaction: ChatInputCommandInteraction<'cached'>): Promise<void> {
+    // Your code goes here to handle the interaction
   }
 }
 ```
 
 ## Usage
 
-To run your bot, execute the following command:
+To start your bot, run the following command:
 
 ```bash
 npm run start
 ```
 
-Make sure you have set up your environment variables before starting the bot.
+Ensure that your environment variables are configured correctly before launching the bot.
 
 ## Contributing
 
-Contributions are welcome! If you find any issues or want to enhance the bot, feel free to fork the repository and submit a pull request.
+Contributions are encouraged! If you encounter issues or wish to enhance the bot, feel free to fork the repository and submit a pull request.
