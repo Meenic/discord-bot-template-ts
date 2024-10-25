@@ -54,7 +54,7 @@ This template uses [Prisma](https://www.prisma.io/) as the ORM for database mana
 1. **Configure your `.env` file:**
 
    ```env
-   DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
+   DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/DATABASE"
    ```
 
    For SQLite (for quick development):
