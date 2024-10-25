@@ -1,6 +1,6 @@
 {
   "name": "discord-bot-template-ts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A customizable TypeScript template for creating Discord bots.",
   "main": "dist/main.js",
   "scripts": {

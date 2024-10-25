@@ -8,6 +8,7 @@ This repository offers a robust template for developing a Discord bot using Type
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+- [Database Setup with Prisma](#database-setup-with-prisma)
 - [Command Structure](#command-structure)
 - [Usage](#usage)
 - [Contributing](#contributing)
@@ -45,6 +46,34 @@ Ensure you have the following installed:
    ```
 
 3. Create a `.env` file in the root directory and populate it with your bot's configuration.
+
+## Database Setup with Prisma
+
+This template uses [Prisma](https://www.prisma.io/) as the ORM for database management. Follow these steps to set up your database:
+
+1. **Configure your `.env` file:**
+
+   ```env
+   DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
+   ```
+
+   For SQLite (for quick development):
+
+   ```env
+   DATABASE_URL="file:./dev.db"
+   ```
+
+2. **Run migrations:**
+
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+
+3. **Generate the Prisma client:**
+
+   ```bash
+   npx prisma generate
+   ```
 
 ## Command Structure
 
