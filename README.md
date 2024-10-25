@@ -61,7 +61,7 @@ export default class PingCommand extends BaseChatInputCommand {
     });
   }
 
-  async onChatInputInteraction(interaction: ChatInputCommandInteraction<'cached'>): Promise<void> {
+  async onChatInputInteraction(i: ChatInputCommandInteraction<'cached'>): Promise<void> {
     // Your code goes here to handle the interaction
   }
 }

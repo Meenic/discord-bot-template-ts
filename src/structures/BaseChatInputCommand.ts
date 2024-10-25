@@ -14,6 +14,7 @@ import {
   BaseChatInputSubCommandOptions,
 } from './BaseChatInputSubcommand';
 import { BaseChatInputSubcommandGroup } from './BaseChatInputSubcommandGroup';
+import colorize from '../utils/colorize';
 
 export abstract class BaseChatInputCommand extends RootChatInputCommand {
   public readonly metadata: SlashCommandBuilder;
@@ -53,7 +54,9 @@ export abstract class BaseChatInputCommand extends RootChatInputCommand {
     );
 
     subCommandInstances.forEach((s) => {
-      console.log(`Loaded "/${this.name} ${s.name}" subcommand`);
+      console.log(
+        `[${colorize('Command Loader', 'red')}] Loaded subcommand "${colorize(`/${this.name} ${s.name}`, 'green')}".`,
+      );
 
       s.setParentOf(this.name);
 
@@ -66,15 +69,18 @@ export abstract class BaseChatInputCommand extends RootChatInputCommand {
     );
 
     subCommandGroupInstances.forEach((s) => {
-      console.log(`Loaded "/${this.name} ${s.name}" subcommand group`);
+      console.log(
+        `[${colorize('Command Loader', 'red')}] Loaded subcommand group "${colorize(`/${this.name} ${s.name}`, 'green')}".`,
+      );
 
       s.setParentOf(this.name);
 
       this.subcommandGroups.set(s.name, s);
-      s.loadSubcommands();
+      s.loadSubcommands(); // This will also log individual subcommands within the group.
       slashCommand.addSubcommandGroup(s.metadata);
     });
 
+    // Clear arrays for optimization
     this.subcommandClasses.splice(0);
     this.subcommandGroupClasses.splice(0);
 

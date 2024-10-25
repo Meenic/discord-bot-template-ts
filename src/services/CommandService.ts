@@ -13,6 +13,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { BaseChatInputSubcommandGroup } from '../structures/BaseChatInputSubcommandGroup';
 import { BaseChatInputSubcommand } from '../structures/BaseChatInputSubcommand';
+import colorize from '../utils/colorize';
 
 export class CommandService extends Service {
   public readonly chatInputCommands = new Map<string, BaseChatInputCommand>();
@@ -53,20 +54,25 @@ export class CommandService extends Service {
             const commandInstance = new commandClass(this.client);
 
             if (this.chatInputCommands.has(commandInstance.name)) {
-              console.log(
-                `Duplicate command found: ${commandInstance.name}. Skipping registration.`,
+              console.warn(
+                `[${colorize('Command Loader', 'red')}] Duplicate command detected: "${colorize(`/${commandInstance.name}`, 'yellow')}". Skipping registration.`,
               );
             } else {
               this.chatInputCommands.set(commandInstance.name, commandInstance);
               console.log(
-                `Command loaded: "/${commandInstance.name}" from "${path.relative(process.cwd(), filePath)}"`,
+                `[${colorize('Command Loader', 'red')}] Successfully loaded command "${colorize(`/${commandInstance.name}`, 'green')}". Source file: "${colorize(path.relative(process.cwd(), filePath), 'cyan')}".`,
               );
             }
           } else {
-            console.error(`No valid command class found in file: ${filePath}`);
+            console.error(
+              `[${colorize('Command Loader', 'red')}] No valid command class found in file: "${colorize(path.relative(process.cwd(), filePath), 'cyan')}".`,
+            );
           }
         } catch (error) {
-          console.error(`Error loading command from file: ${filePath}`, error);
+          console.error(
+            `[${colorize('Command Loader', 'red')}] Error loading command from file: "${colorize(path.relative(process.cwd(), filePath), 'cyan')}".`,
+            error,
+          );
         }
       }
     }
@@ -75,6 +81,7 @@ export class CommandService extends Service {
   private async registerChatInputCommandsToAPI(): Promise<void> {
     const slashCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 
+    // Prepare the slash commands to register
     this.chatInputCommands.forEach((command) => {
       slashCommands.push(command.metadata.toJSON());
     });
@@ -89,8 +96,11 @@ export class CommandService extends Service {
     const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
     try {
+      let registeredCommands;
+
+      // Register commands based on the environment (development or production)
       if (isDevelopment && guildId) {
-        await rest.put(
+        registeredCommands = await rest.put(
           Routes.applicationGuildCommands(process.env.CLIENT_ID, guildId),
           {
             body: slashCommands,
@@ -100,13 +110,30 @@ export class CommandService extends Service {
           `Successfully registered ${slashCommands.length} commands in development guild: ${guildId}.`,
         );
       } else {
-        await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
-          body: slashCommands,
-        });
+        registeredCommands = await rest.put(
+          Routes.applicationCommands(process.env.CLIENT_ID),
+          {
+            body: slashCommands,
+          },
+        );
         console.log(
           `Successfully registered ${slashCommands.length} commands globally.`,
         );
       }
+
+      // Set the command IDs after registration
+      if (Array.isArray(registeredCommands)) {
+        registeredCommands.forEach((registeredCommand) => {
+          const matchingCommand = this.chatInputCommands.get(
+            registeredCommand.name,
+          );
+          if (matchingCommand) {
+            matchingCommand.setCommandId(registeredCommand.id);
+          }
+        });
+      }
+
+      console.log('Command IDs have been set successfully.');
     } catch (error) {
       console.error('Error occurred while registering commands:', error);
     }
@@ -139,11 +166,10 @@ export class CommandService extends Service {
         console.warn(
           `Failed to fetch the bot's member object in guild: ${guild.id}`,
         );
-        await interaction.reply({
-          content:
-            'An error occurred while trying to fetch bot information. Please try again later.',
-          ephemeral: true,
-        });
+        await this.handleInteractionError(
+          interaction,
+          'An error occurred while trying to fetch bot information. Please try again later.',
+        );
         return;
       }
     }
@@ -155,11 +181,10 @@ export class CommandService extends Service {
         console.warn(
           `Failed to fetch member for user ID: ${user.id} in guild: ${guild.id}`,
         );
-        await interaction.reply({
-          content:
-            'Could not retrieve member information. Please try again later.',
-          ephemeral: true,
-        });
+        await this.handleInteractionError(
+          interaction,
+          'Could not retrieve member information. Please try again later.',
+        );
         return;
       }
     }
@@ -171,11 +196,10 @@ export class CommandService extends Service {
 
     if (!command) {
       console.warn(`Received unknown command: ${commandName}`);
-      await interaction.reply({
-        content:
-          'This command is not recognized or may no longer be available.',
-        ephemeral: true,
-      });
+      await this.handleInteractionError(
+        interaction,
+        'This command is not recognized or may no longer be available.',
+      );
       return;
     }
 
@@ -189,20 +213,18 @@ export class CommandService extends Service {
         );
 
       if (missingMemberPermissions.length > 0) {
-        await interaction.reply({
-          content: `You lack the following permissions to execute this command: ${missingMemberPermissions.join(
-            ', ',
-          )}`,
-          ephemeral: true,
-        });
+        await this.handleInteractionError(
+          interaction,
+          `You lack the following permissions to execute this command: ${missingMemberPermissions.join(', ')}`,
+        );
         return;
       }
 
       if (missingBotPermissions.length > 0) {
-        await interaction.reply({
-          content: `I lack the following permissions to execute this command: ${missingBotPermissions.join(', ')}`,
-          ephemeral: true,
-        });
+        await this.handleInteractionError(
+          interaction,
+          `I lack the following permissions to execute this command: ${missingBotPermissions.join(', ')}`,
+        );
         return;
       }
 
@@ -215,11 +237,10 @@ export class CommandService extends Service {
           console.warn(
             `Unknown subcommand group: ${subcommandGroupName} in command /${commandName}`,
           );
-          await interaction.reply({
-            content:
-              'This subcommand group is not recognized or may no longer be available.',
-            ephemeral: true,
-          });
+          await this.handleInteractionError(
+            interaction,
+            'This subcommand group is not recognized or may no longer be available.',
+          );
           return;
         }
 
@@ -229,11 +250,10 @@ export class CommandService extends Service {
           console.warn(
             `Unknown subcommand: ${subcommandName} in group /${commandName} ${subcommandGroupName}`,
           );
-          await interaction.reply({
-            content:
-              'This subcommand is not recognized or may no longer be available.',
-            ephemeral: true,
-          });
+          await this.handleInteractionError(
+            interaction,
+            'This subcommand is not recognized or may no longer be available.',
+          );
           return;
         }
 
@@ -252,11 +272,10 @@ export class CommandService extends Service {
           console.warn(
             `Unknown subcommand: ${subcommandName} in command /${commandName}`,
           );
-          await interaction.reply({
-            content:
-              'This subcommand is not recognized or may no longer be available.',
-            ephemeral: true,
-          });
+          await this.handleInteractionError(
+            interaction,
+            'This subcommand is not recognized or may no longer be available.',
+          );
           return;
         }
 
@@ -272,11 +291,22 @@ export class CommandService extends Service {
       );
     } catch (error) {
       console.error(`Error executing command /${commandName}:`, error);
-      await interaction.reply({
-        content:
-          'An error occurred while executing the command. Please try again later.',
-        ephemeral: true,
-      });
+      await this.handleInteractionError(
+        interaction,
+        'An error occurred while executing the command. Please try again later.',
+      );
+    }
+  }
+
+  private async handleInteractionError(
+    interaction: ChatInputCommandInteraction,
+    message: string,
+  ) {
+    // Check if the interaction has already been replied to or deferred
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({ content: message, ephemeral: true });
+    } else {
+      await interaction.reply({ content: message, ephemeral: true });
     }
   }
 }

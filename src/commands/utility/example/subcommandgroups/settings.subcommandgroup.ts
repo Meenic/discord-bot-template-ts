@@ -8,7 +8,7 @@ export default class SettingsSubcommandGroup extends BaseChatInputSubcommandGrou
   constructor(client: BaseClient) {
     super(client, {
       name: 'settings',
-      description: 'Manage settings related to the example command.',
+      description: 'Settings subcommand group',
       category: CommandCategory.Utility,
       requiredApplicationPermissions: [],
       requiredMemberPermissions: [],

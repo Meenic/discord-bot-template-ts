@@ -8,6 +8,7 @@ import { CommandCategory } from '../types/types';
 import { BaseChatInputSubcommand } from './BaseChatInputSubcommand';
 import { Constructor } from '../types/global';
 import { BaseClient } from '../client';
+import colorize from '../utils/colorize';
 
 export abstract class BaseChatInputSubcommandGroup {
   public parentOf!: string;
@@ -58,7 +59,7 @@ export abstract class BaseChatInputSubcommandGroup {
 
     subCommandInstances.forEach((s) => {
       console.log(
-        `Loaded "/${this.parentOf} ${this.name} ${s.name}" subcommand`,
+        `[${colorize('Command Loader', 'red')}] Loaded subcommand "${colorize(`/${this.parentOf} ${this.name} ${s.name}`, 'green')}".`,
       );
 
       s.setParentOf(this.name);
@@ -66,12 +67,15 @@ export abstract class BaseChatInputSubcommandGroup {
       this.metadata.addSubcommand(s.metadata);
     });
 
-    // clear the array to improve perf
+    // Clear the array for performance optimization
     this.subcommandClasses.splice(0);
   }
 
   setParentOf(name: string) {
     this.parentOf = name;
+    console.log(
+      `[${colorize('Command Loader', 'red')}] Set parent command of "${colorize(this.name, 'green')}" to "${colorize(name, 'magenta')}".`,
+    );
   }
 }
 

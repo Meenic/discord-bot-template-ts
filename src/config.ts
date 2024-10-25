@@ -10,7 +10,7 @@ const envSchema = z.object({
   CLIENT_ID: z.string().min(1, 'Client ID is required'),
 
   // Database connection variables
-  // DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 
   // Redis configuration
   REDIS_URL: z.string().optional(),
